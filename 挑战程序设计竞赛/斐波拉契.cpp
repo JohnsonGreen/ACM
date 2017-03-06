@@ -1,11 +1,11 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <cstdlib>
 #include <cstdio>
 #include <algorithm>
 
 using namespace std;
 
-const int MAX_N = 2 << 31 -1;  //ÓÐ·ûºÅ32Î»×î´óÖµ
+const int MAX_N = 2 << 31 -1;  //æœ‰ç¬¦å·32ä½æœ€å¤§å€¼
 
 int main()
 {
