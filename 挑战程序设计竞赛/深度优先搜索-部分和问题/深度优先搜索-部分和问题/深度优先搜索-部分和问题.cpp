@@ -23,6 +23,8 @@ int n, k;
 
 bool dfs(int i, int sum) {
 	
+	if (sum > k)  return false;  //剪枝，后续已经不可能会等于k
+	if (sum == k)  return true;  //剪枝，已经完成搜索
 
 	if (i == n)      //当i==n时，说明之前0到n-1项已经完全遍历，此时应该判断和是否与k相等了
 		return sum == k;
