@@ -147,6 +147,8 @@ bool dc( LinkedList L, int n) {
 	
 }
 
+
+
 void printList(LinkedList &L) {
 	LNode *p = L->next;
 	while (p) {
@@ -155,8 +157,6 @@ void printList(LinkedList &L) {
 	}
 	cout << endl;
 }
-
-
 
 int temp(int a){
 

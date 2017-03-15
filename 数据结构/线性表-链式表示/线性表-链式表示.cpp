@@ -5,6 +5,7 @@ using namespace std;
 
 typedef int ElemType;
 
+/* 
 typedef struct LNode{
 	ElemType data;        //数据域
 	struct LNode *next;    //指针域 未初始化时，指针指向的空间不明（野指针），也就是说要显式分配内存或置为NULL
@@ -112,7 +113,9 @@ void printLinkList(const LinkList &L){
 	puts("");
 }
 
+*/
 
+/*
 int main() {
 
 	LinkList L;
@@ -122,7 +125,7 @@ int main() {
 
 	while (true) {
 
-		/* 
+		
 		int tm1, tm2;
 		scanf("%d", &tm1);
 
@@ -147,7 +150,7 @@ int main() {
 		scanf("%d%d", &elem, &i);
 		insertNode(L, elem, i);
 		printLinkList(L);
-		*/
+		
 
 		int i;
 		scanf("%d", &i);
@@ -161,3 +164,5 @@ int main() {
 
 	return 0;
 }
+
+*/

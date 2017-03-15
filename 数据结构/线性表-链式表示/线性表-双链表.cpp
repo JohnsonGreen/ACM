@@ -7,8 +7,10 @@ typedef int ElemType;
 
 typedef struct LNode {
 	ElemType data;        //数据域
-	struct LNode *next;    //指针域 未初始化时，指针指向的空间不明（野指针），也就是说要显式分配内存或置为NULL
+	struct LNode  *pre, *next;   //前驱和后继指针  
 }LNode, *LinkList;
+
+
 
 
 //1.采用头插法建立单链表
