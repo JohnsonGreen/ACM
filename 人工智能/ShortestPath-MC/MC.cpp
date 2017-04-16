@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <queue>
@@ -8,28 +8,31 @@
 
 using namespace std;
 
-const int MAX_M = 4;                       //¾ØÕó³¤¿í
-const int MAX_N = MAX_M * MAX_M;           //×´Ì¬×ÜÊı
+const int MAX_M = 4;                       //çŸ©é˜µé•¿å®½
+const int MAX_N = MAX_M * MAX_M;           //çŠ¶æ€æ€»æ•°
 const double INF = 999999999.0;         
-char   S[MAX_M][MAX_M];                    //×´Ì¬¾ØÕó
-double Q[MAX_N][MAX_N];                    //´óÄÔ
-double SA[MAX_N][MAX_N];                   //±£´æÑ¡ÔñµÄÄ³¸öactionµÄGÖµ×ÜºÍ
-double PI[MAX_N][MAX_N];                   //Ñ¡ÔñactionµÄ¸ÅÂÊ
-int C[MAX_N];                              //×´Ì¬sÄÜ¹»²ÉÈ¡µÄĞĞ¶¯ÊıÁ¿
-int CNT[MAX_N][MAX_N];                     //¾­¹ı×´Ì¬µÄ´ÎÊı£¬ÓÃÓÚ×÷Æ½¾ù
-double V[MAX_M][MAX_M];                       //Öµ¾ØÕó
+char   S[MAX_M][MAX_M];                    //çŠ¶æ€çŸ©é˜µ
+double Q[MAX_N][MAX_N];                    //å¤§è„‘
+double SA[MAX_N][MAX_N];                   //ä¿å­˜é€‰æ‹©çš„æŸä¸ªactionçš„Gå€¼æ€»å’Œ
+double PI[MAX_N][MAX_N];                   //é€‰æ‹©actionçš„æ¦‚ç‡
+int C[MAX_N];                              //çŠ¶æ€sèƒ½å¤Ÿé‡‡å–çš„è¡ŒåŠ¨æ•°é‡
+int CNT[MAX_N][MAX_N];                     //ç»è¿‡çŠ¶æ€çš„æ¬¡æ•°ï¼Œç”¨äºä½œå¹³å‡
+double V[MAX_M][MAX_M];                       //å€¼çŸ©é˜µ
 
 int dx[4] = { -1,0,1,0 }, dy[4] = { 0,1,0,-1 };
-int r = -1;                                 //Ã¿´ÎactionµÄ½±Àø
+int r = -1;                                 //æ¯æ¬¡actionçš„å¥–åŠ±
 double gama = 0.8;
 double e = 1e-10;
 double epi = 0.8;                          //episilon
-queue<pair<int, int>> q;                   //±£´æepisode
+queue<pair<int, int>> q;                   //ä¿å­˜episode
 
+
+//åˆ¤æ–­å½“å‰ä½ç½®æ˜¯å¦åˆæ³•
 bool judge(int x, int y) {
 	return (x >= 0 && x < MAX_M && y >= 0 && y < MAX_M && S[x][y] != '#');
 }
 
+//å¯¹æ¯ä¸ªçŠ¶æ€èƒ½å¤Ÿé‡‡å–çš„actionè®¾ç½®å¹³å‡æ¦‚ç‡
 void setPi() {
 	for (int i = 0; i < MAX_M; i++) {
 		for (int j = 0; j < MAX_M; j++) {
@@ -55,18 +58,26 @@ void setPi() {
 
 void  init() {
 	
-	//S[2][3] = '#';                        //ÕÏ°­
-	S[0][0] = 'E';                        //ÖÕµã
-	S[1][2] = 'E';
-	S[1][4] = 'E';
-	setPi();                              //ÉèÖÃ³õÊ¼µÄPIÖµ
+	//S[2][3] = '#';                        //éšœç¢
+	S[0][0] = 'E';                        //ç»ˆç‚¹
+	//S[1][2] = 'E';
+	//S[2][0] = 'E';
+	
+	//S[3][3] = 'E';
+	//S[3][1] = 'E';
+	//S[2][2] = 'E';
+	setPi();                              //è®¾ç½®åˆå§‹çš„PIå€¼
 
 }
 
+
+//åˆ¤æ–­æ˜¯å¦ä¸ºç»ˆç»“ç‚¹
 bool end(int s) {
-	return S[s / 4][s % 4] == 'E';
+	return S[s / MAX_M][s % MAX_M] == 'E';
 }
 
+
+//æ ¹æ®Ïµ-Greedyæ–¹æ³•è·å–å¯èƒ½çš„ä¸‹ä¸ªçŠ¶æ€ï¼Œä¹Ÿå°±æ˜¯å¯¹åº”çš„action
 int getNextByPi(int s) {
 
 	double temp = (rand() % 10000)/10000.0;
@@ -89,6 +100,7 @@ int getNextByPi(int s) {
 	return sb;
 }
 
+//ç¼–é€ ç¬¦åˆè¦æ±‚çš„Episode
 void makeEpisodeRandomly() {
 	
 	int st = rand() % MAX_N;
@@ -101,7 +113,7 @@ void makeEpisodeRandomly() {
 		}
 	}
 	int lt;
-	//printf("\nĞòÁĞ: ");
+	//printf("\nåºåˆ—: ");
 	//printf("%d  ", st);
 	do{
 		lt = getNextByPi(st);
@@ -113,11 +125,12 @@ void makeEpisodeRandomly() {
 	
 }
 
+//æ‰“å°VçŸ©é˜µ
 void printV() {
 	for (int i = 0; i < MAX_M; i++) {
 		for (int j = 0; j < MAX_M; j++) {
 			if (fabs(V[i][j] - 0) > e) {
-				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0xA); //ÁÁÂÌ
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0xA); //äº®ç»¿
 				printf("%.2lf ", V[i][j]);
 			}
 			else {
@@ -129,21 +142,18 @@ void printV() {
 	}
 }
 
-void solve() {
+
+//MCæ–¹æ³•
+void solve(int all) {
 	int mn = 0;
-	int all = 1000;
 	while (all--) {
 		mn++;
-		//printf("-------------------%d---------------------",mn);
 		makeEpisodeRandomly();
-		
 		double G[MAX_N][MAX_N];
-		for (int i = 0; i < MAX_N; i++) {
-			for (int j = 0; j < MAX_N; j++) {
+		for (int i = 0; i < MAX_N; i++) 
+			for (int j = 0; j < MAX_N; j++) 
 				G[i][j] = 0.0;
-			}
-		}
-
+		
 		int k = 0;
 		queue<pair<int, int>> tq;
 		while (!q.empty()) {
@@ -151,7 +161,7 @@ void solve() {
 			int ls = p.first, rs = p.second;
 			queue<pair<int, int>> tqr;
 			if (fabs(G[ls][rs] - 0.0) > e) {
-				continue;           //ºöÂÔÒÔºóµÄÖØ¸´´ÎÊı
+				continue;           //å¿½ç•¥ä»¥åçš„é‡å¤æ¬¡æ•°
 			}
 			G[ls][rs] = r;
 			int pin = 0;
@@ -159,14 +169,15 @@ void solve() {
 				pin++;
 				pair<int, int> tp = q.front(); q.pop();
 				tqr.push(tp);
-				G[ls][rs] += r * (pow(gama, pin));                //½±Àø
+				G[ls][rs] += r * (pow(gama, pin));                //å¥–åŠ±
 			}
 			q = tqr; 
-			CNT[ls][rs]++;                    //´ÎÊı¼Ó1
+			CNT[ls][rs]++;                    //æ¬¡æ•°åŠ 1
 			SA[ls][rs] += G[ls][rs];
 			Q[ls][rs] = SA[ls][rs] / CNT[ls][rs];
 		}
-		while (!tq.empty()) {
+
+		while (!tq.empty()) {                                           //è·å–Qå€¼æœ€å¤§çš„action
 			pair<int, int> p = tq.front(); tq.pop();
 			int ls = p.first;
 			int i = ls / MAX_M, j = ls % MAX_M,t = 4,rsflag;
@@ -188,7 +199,7 @@ void solve() {
 				if (judge(x, y)) {
 					int rs = x * MAX_M + y;
 					if (rs == rsflag) {
-						PI[ls][rs] = 1 - epi + epi / C[ls];             //¸ÅÂÊ·ÖÅä
+						PI[ls][rs] = 1 - epi + epi / C[ls];             //æ¦‚ç‡åˆ†é…
 					}
 					else {
 						PI[ls][rs] = epi / C[ls];
@@ -196,10 +207,6 @@ void solve() {
 				}
 			}
 		}
-
-		//printf("\n");
-		//printV();
-		//printf("\n");
 	}
 
 	printV();
@@ -209,7 +216,7 @@ void solve() {
 int main() {
 	srand(time(0));
 	init();
-	solve();
+	solve(1000);
 	  
 	return 0;
 }

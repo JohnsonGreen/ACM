@@ -28,10 +28,13 @@ double e = 1e-10;
 double epi = 0.8;                          //episilon
 queue<pair<int, int>> q;                   //保存episode
 
+
+//判断当前位置是否合法
 bool judge(int x, int y) {
 	return (x >= 0 && x < MAX_M && y >= 0 && y < MAX_M && S[x][y] != '#');
 }
 
+//对每个状态能够采取的action设置平均概率
 void setPi() {
 	for (int i = 0; i < MAX_M; i++) {
 		for (int j = 0; j < MAX_M; j++) {
@@ -55,14 +58,17 @@ void setPi() {
 	}
 }
 
+
 void  init() {
 
-	//S[2][3] = '#';                        //障碍
+	//S[2][3] = 'E';                        //障碍
 	S[3][3] = 'E';                          //终点
 	S[2][1] = 'E';
 	setPi();                               //设置初始的PI值
 }
 
+
+//判断是否为终结点
 bool end(int s) {
 	return S[s / 4][s % 4] == 'E';
 }
@@ -89,6 +95,7 @@ int getNextByPi(int s) {
 	return sb;
 }
 
+//随机获取初始状态
 int getInitState() {
 	int st = rand() % 16;
 	while (true) {
@@ -102,11 +109,12 @@ int getInitState() {
 	return st;
 }
 
+//打印V矩阵
 void printV() {
 	for (int i = 0; i < MAX_M; i++) {
 		for (int j = 0; j < MAX_M; j++) {
 
-			if (V[i][j] - 0 > e) {
+			if (fabs(V[i][j] - 0.0) > e) {
 				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0xA); //亮绿
 				printf("%.2lf ", V[i][j]);
 			}
@@ -118,6 +126,8 @@ void printV() {
 		printf("\n");
 	}
 }
+
+//获取状态s关联的最大Q值
 double getMaxQ(int s) {
 	int i = s / 4, j = s % 4, t = 4, rsflag;
 	double ma = -INF;
@@ -148,32 +158,34 @@ double getMaxQ(int s) {
 	return ma;
 }
 
-void solve() {
+//TD的Q-learning算法
+void solve(int all) {
 	int mn = 0;
-	while (true) {
+	while (all--) {
 		mn++;
-		printf("-------------------%d---------------------", mn);
+		//printf("-------------------%d---------------------", mn);
 		int st = getInitState();
-		printf("\n episodes:  %d ", st);
+		//printf("\n episodes:  %d ", st);
 		do {
 			int rt = getNextByPi(st);
-			printf("%d ", rt);
+			//printf("%d ", rt);
 			double MaxQ = getMaxQ(rt);
 			Q[st][rt] += a * (r + gama * MaxQ - Q[st][rt]);         //更新Q值
 			st = rt;	
 
 		} while (!end(st));
 	
-		printf("\n");
-		printV();
-		printf("\n");
+		//printf("\n");
+		//printV();
+		//printf("\n");
 
 	}
+	printV();
 }
 
 int main() {
 	srand(time(0));
 	init();
-	solve();
+	solve(100);
 	return 0;
 }
