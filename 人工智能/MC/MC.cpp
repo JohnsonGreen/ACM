@@ -20,9 +20,10 @@ int CNT[MAX_N];                           //经过状态的次数，用于作平均
 
 
 int dx[4] = { -1,0,1,0 }, dy[4] = { 0,1,0,-1 };
-int r = -1;                                 //每次action的奖励
+double r = -1.0;                                 //每次action的奖励
 double e = 1e-10;
 double epi = 0.5;                          //episilon
+double gama = 0.8;
 queue<pair<int, int>> q;                   //保存episode
 
 bool judge(int x, int y) {
@@ -56,6 +57,7 @@ void  init() {
 	//memset(Q,0,sizeof(int)*MAX_N);      //初始化
 	//S[2][3] = '#';                        //障碍
 	S[3][3] = 'E';                        //终点
+	//S[2][1] = 'E';
 	setPi();                              //设置初始的PI值
 
 }
@@ -72,14 +74,16 @@ int getNextByPi(int s) {
 	int sb;
 	while (k--) {
 		int x = i + dx[k], y = j + dy[k];
-		sb = x * MAX_M + y;
-		if (fabs(PI[s][sb] - 0.0) < e)
-			continue;
-		r = l + PI[s][sb];
-		if ((temp > l  &&  temp < r) || (fabs(temp - l) < e  &&  temp < r) || (fabs(temp - r) < e  &&  temp > r)) {
-			return sb;
-		}
-		l = r;
+		if (judge(x, y)) {
+			sb = x * MAX_M + y;
+			if (fabs(PI[s][sb] - 0.0) < e)
+				continue;
+			r = l + PI[s][sb];
+			if ((temp > l  &&  temp < r) || (fabs(temp - l) < e  &&  temp < r) || (fabs(temp - r) < e  &&  temp > r)) {
+				return sb;
+			}
+			l = r;
+		}	
 	}
 	return sb;
 }
@@ -87,7 +91,7 @@ int getNextByPi(int s) {
 void makeEpisodeRandomly() {
 	srand(time(0));
 	int st = rand() % 16;
-	printf("随机数：");
+	//printf("随机数：");
 	while (true) {
 		if (S[st / 4][st % 4] != '#' && S[st / 4][st % 4] != 'E') {
 			break;
@@ -98,7 +102,7 @@ void makeEpisodeRandomly() {
 	}
 	int lt;
 	do {
-		printf("%d ",st);
+		//printf("%d ",st);
 		lt = getNextByPi(st);
 		q.push(pair<int, int>(st, lt));
 		st = lt;
@@ -126,25 +130,46 @@ void print(double arr[][MAX_M]) {
 
 void solve(){
      int k = 0;
-	 while (true) {
+	 int all = 10000;
+	 while (all--) {
 		k++;
 		makeEpisodeRandomly();
-		printf("---------------------  %d  ----------------------\n", k);
-		printf("序列： ");
+		//printf("---------------------  %d  ----------------------\n", k);
+		//printf("序列： ");
+
+		double G[MAX_N];
+		for (int i = 0; i < MAX_N; i++) {
+			G[i] = 0.0;
+		}
 		while (!q.empty()) {
-			int G = q.size() * r;                            //奖励
+			
 			pair<int, int> p = q.front(); q.pop();
 			int ls = p.first;
-			printf("%d ", ls);
+			queue<pair<int, int>> tq;
+			if (fabs(G[ls] - 0.0) > e) {
+				continue;
+			}
+			G[ls] = r;
+			int pin = 0;
+			while (!q.empty()) {
+				pin++;
+				pair<int, int> tp = q.front(); q.pop();
+				tq.push(tp);
+				G[ls] += r * (pow(gama,pin));                //奖励
+			}
+			q = tq;
 			int x = ls / MAX_M, y = ls % MAX_M;
 			CNT[ls]++;                    //次数加1
-			SA[ls] += G;
+			SA[ls] += G[ls];
 			V[x][y] = SA[ls] / CNT[ls];
+			
 		}
-		puts("");
-		print(V);
-		puts("");
+		//puts("");
+		//print(V);
+		//puts("");
 	}
+
+	 print(V);
 
 }
 
