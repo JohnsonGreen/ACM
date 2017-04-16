@@ -134,8 +134,8 @@ void solve(){
 	 while (all--) {
 		k++;
 		makeEpisodeRandomly();
-		//printf("---------------------  %d  ----------------------\n", k);
-		//printf("–Ú¡–£∫ ");
+		printf("---------------------  %d  ----------------------\n", k);
+		printf("–Ú¡–£∫ ");
 
 		double G[MAX_N];
 		for (int i = 0; i < MAX_N; i++) {
@@ -164,12 +164,12 @@ void solve(){
 			V[x][y] = SA[ls] / CNT[ls];
 			
 		}
-		//puts("");
-		//print(V);
-		//puts("");
+		puts("");
+		print(V);
+		puts("");
 	}
 
-	 print(V);
+	 //print(V);
 
 }
 

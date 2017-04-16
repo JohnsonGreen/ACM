@@ -21,6 +21,7 @@ double V[MAX_M][MAX_M];                       //值矩阵
 
 int dx[4] = { -1,0,1,0 }, dy[4] = { 0,1,0,-1 };
 int r = -1;                                 //每次action的奖励
+double gama = 0.8;
 double e = 1e-10;
 double epi = 0.8;                          //episilon
 queue<pair<int, int>> q;                   //保存episode
@@ -39,7 +40,6 @@ void setPi() {
 					cnt++;
 				}
 			}
-			
 			int t = 4, sa = i * MAX_M + j;
 			C[sa] = cnt;
 			while (t--) {
@@ -57,6 +57,8 @@ void  init() {
 	
 	//S[2][3] = '#';                        //障碍
 	S[0][0] = 'E';                        //终点
+	S[1][2] = 'E';
+	S[1][4] = 'E';
 	setPi();                              //设置初始的PI值
 
 }
@@ -99,22 +101,29 @@ void makeEpisodeRandomly() {
 		}
 	}
 	int lt;
-	printf("\n序列: ");
-	printf("%d  ", st);
+	//printf("\n序列: ");
+	//printf("%d  ", st);
 	do{
 		lt = getNextByPi(st);
 		q.push(pair<int,int>(st,lt));
 		st = lt;
-		printf("%d  ", lt);
+	//	printf("%d  ", lt);
 	} while (!end(lt));
-	printf("\n");
+	//printf("\n");
 	
 }
 
 void printV() {
 	for (int i = 0; i < MAX_M; i++) {
 		for (int j = 0; j < MAX_M; j++) {
-			printf("%.2lf ", V[i][j]);
+			if (fabs(V[i][j] - 0) > e) {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 0xA); //亮绿
+				printf("%.2lf ", V[i][j]);
+			}
+			else {
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_INTENSITY | FOREGROUND_RED);
+				printf("%.2lf ", V[i][j]);
+			}
 		}
 		printf("\n");
 	}
@@ -122,27 +131,42 @@ void printV() {
 
 void solve() {
 	int mn = 0;
-	while (true) {
+	int all = 1000;
+	while (all--) {
 		mn++;
-		printf("-------------------%d---------------------",mn);
+		//printf("-------------------%d---------------------",mn);
 		makeEpisodeRandomly();
-		queue<pair<int, int>> tq;
-		int G[MAX_N][MAX_N]; memset(G,0,sizeof(G));
+		
+		double G[MAX_N][MAX_N];
+		for (int i = 0; i < MAX_N; i++) {
+			for (int j = 0; j < MAX_N; j++) {
+				G[i][j] = 0.0;
+			}
+		}
+
 		int k = 0;
+		queue<pair<int, int>> tq;
 		while (!q.empty()) {
-			pair<int, int> p = q.front(); tq.push(p);
+			pair<int, int> p = q.front(); tq.push(p); q.pop();
 			int ls = p.first, rs = p.second;
-			if (G[ls][rs] != 0) {
-				q.pop();
+			queue<pair<int, int>> tqr;
+			if (fabs(G[ls][rs] - 0.0) > e) {
 				continue;           //忽略以后的重复次数
 			}
-			G[ls][rs] =  q.size() * r, q.pop();      //奖励
+			G[ls][rs] = r;
+			int pin = 0;
+			while (!q.empty()) {
+				pin++;
+				pair<int, int> tp = q.front(); q.pop();
+				tqr.push(tp);
+				G[ls][rs] += r * (pow(gama, pin));                //奖励
+			}
+			q = tqr; 
 			CNT[ls][rs]++;                    //次数加1
 			SA[ls][rs] += G[ls][rs];
 			Q[ls][rs] = SA[ls][rs] / CNT[ls][rs];
 		}
 		while (!tq.empty()) {
-			
 			pair<int, int> p = tq.front(); tq.pop();
 			int ls = p.first;
 			int i = ls / MAX_M, j = ls % MAX_M,t = 4,rsflag;
@@ -173,11 +197,12 @@ void solve() {
 			}
 		}
 
-		printf("\n");
-		printV();
-		printf("\n");
-
+		//printf("\n");
+		//printV();
+		//printf("\n");
 	}
+
+	printV();
 	
 }
 
